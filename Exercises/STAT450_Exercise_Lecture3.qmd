@@ -1,0 +1,36 @@
+---
+title: "Stat450, Lecture 3 Exercise"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+# Exercise 1
+
+## (a)
+
+```{r}
+summary(CPS85$wage)
+```
+
+## (b)
+
+```{r}
+CPS85[530:534,]
+CPS85[-1:-(534-5),]
+```
+
+# Exercise 2
+
+```{r}
+plot(wage ~ educ, data = CPS85, xlab = "Education(Years)", ylab = "Wage (USD per hour)")
+```
+
+# Exercise 3
+
+```{r}
+dim(CPS85)
+dim(na.omit(CPS85))
+```

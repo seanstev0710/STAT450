@@ -1,0 +1,51 @@
+---
+title: "Lecture 8, Exercise"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(dplyr)
+library(tidyverse)
+starwars2 <- select(starwars, name, height, mass, homeworld, species)
+starwars2
+```
+
+# Exercise 1
+
+```{r}
+# filter(starwars2, species = "Droid") ### Wrong logical operator used equality is ==
+filter(starwars2, species == "Droid")
+```
+
+It returns an error because = is not an equality operation. == is used for equality operation
+
+# Exercise 2
+
+```{r}
+filter(starwars2, species != "Human")
+```
+
+# Exercise 3
+
+```{r}
+filter(starwars2, (species != "Human") & (homeworld == "Tatooine"))
+```
+
+# Exercise 4
+
+```{r}
+arrange(starwars2, ... = mass)
+```
+
+# Exercise 5
+
+```{r}
+# What does this code do?
+arrange(starwars2, species, height)
+```
+
+It arranges the rows of the dataframe by species first, then groups them orders by height within their species grouping

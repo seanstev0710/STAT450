@@ -1,0 +1,144 @@
+---
+title: "STAT450, Homework 4"
+author: "Sean Steven C. Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+# Exercise 1
+
+```{r}
+hate_crimes <- read_csv("hate_crimes.csv")
+head(hate_crimes)
+```
+
+## (a)
+
+```{r}
+# 10 states with the higest gini_index
+hate_crimes |> 
+  select(state, gini_index) |> 
+  arrange(desc(gini_index)) |>
+  head(n = 10)
+```
+
+```{r}
+# 10 states with the lowest gini_index
+hate_crimes |> 
+  select(state, gini_index) |> 
+  arrange(gini_index) |>
+  head(n = 10)
+```
+
+## (b)
+
+```{r}
+ggplot(hate_crimes, aes(x = gini_index, y = avg_hatecrimes_per_100k_fbi)) +
+  geom_point(size = 1) +
+  geom_smooth(se = FALSE, method = "loess") +
+  ylab(label = "Average annual hate crimes per 100,000 residents") +
+  xlab("GINI Index")
+```
+
+There isn't a clear association between the GINI Index and the Average annual hate crime per 100,000 residents. There is a clear outlier and this is the District of Columbia with a GINI_Index value of 0.532.
+
+# Exercise 2
+
+## (a)
+
+**Answer:**
+
+read_csv2() is used to read data that use ";" to separate values
+
+## (b)
+
+**Answer:**
+
+read_delim() is used to read data that uses "\|" to separate values. You just need to specify delim = "\|" as an argument to the function
+
+# Exercise 3
+
+```{r}
+head(relig_income)
+```
+
+```{r}
+names(relig_income)[-1]
+```
+
+```{r}
+relig_income |> 
+  pivot_longer(cols = names(relig_income)[-1],
+               names_to = "income", values_to = "count")
+```
+
+# Exercise 4
+
+## (a)
+
+This is an inner join. Only the rows that are in both table were kept
+
+## (b)
+
+This is a left join. All the rows in table 1 (the left one) were kept
+
+# Exercise 5
+
+```{r}
+head(planes)
+```
+
+```{r}
+planes |> 
+  count(tailnum) |> 
+  filter(n > 1)
+```
+
+tailnum is a unique identifier for planes dataframe
+
+# Exercise 6
+
+```{r}
+options(digits = 2)
+```
+
+```{r}
+airports_location <- flights |> 
+  group_by(dest) |> 
+  summarize(count = n(), arr_delay_mean = mean(arr_delay, na.rm = TRUE)) |> 
+  left_join(airports, by = c("dest" = "faa"))
+airports_location
+```
+
+# Bonus
+
+```{r}
+library(maps)
+library(mapproj)
+
+```
+
+```{r}
+states <- map_data("state")
+```
+
+```{r}
+airports_location |> 
+  filter(!(dest %in% c("HNL", "ANC"))) |> 
+  drop_na(lat) |> 
+  ggplot(data = _, aes(x = lon, y = lat, col = arr_delay_mean)) +
+  geom_polygon(data = states, aes(x = long, y = lat, group = group),
+               fill = "white", color = "black") +
+  geom_point(size = 2) +
+  ggtitle("Average arrival delay per Destination Airport for nycflights13") +
+  ylab("Latitude") +
+  xlab("Longitude") +
+coord_map()
+```

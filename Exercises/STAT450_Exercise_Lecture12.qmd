@@ -1,0 +1,84 @@
+---
+title: "STAT450, Exercise Lecture 12"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+# Exercise 1
+
+**Use the procedure described on the previous page to read the hate_crimes.csv data set into R.**
+
+```{r}
+hate_crimes <- read_csv("hate_crimes.csv")
+```
+
+# Exercise 2
+
+**Compute some summary statistics for avg_hatecrimes_per_100k_fbi**
+
+```{r}
+head(hate_crimes)
+```
+
+```{r}
+summary(hate_crimes)
+```
+
+# Exercise 3
+
+**Which states had the highest hate crime rates?**
+
+```{r}
+hate_crimes |> 
+  select(state, avg_hatecrimes_per_100k_fbi) |> 
+  arrange(desc(avg_hatecrimes_per_100k_fbi)) |> 
+  head(5)
+```
+
+**Which states had the lowest hate crime rates?**
+
+```{r}
+hate_crimes |> 
+  select(state, avg_hatecrimes_per_100k_fbi) |> 
+  arrange(avg_hatecrimes_per_100k_fbi) |> 
+  head(5)
+```
+
+# Exercise 4
+
+**Use ggplot() to make a scatter plot with share_unemployed_seasonal on the x-axis and avg_hatecrimes_per_100k_fbi on the y-axis. Use geom_smooth() to add a smooth trend line to scatter plot. Label the x-axis “Seasonally adjusted unemployment”, and the y-axis**
+
+**“Average hate crimes per 100,000 residents, 2010-2015”. Describe any trends in the scatter plot.**
+
+```{r}
+ggplot(hate_crimes,
+       aes(y = avg_hatecrimes_per_100k_fbi, x = share_unemployed_seasonal)) +
+  geom_point(size = 1) +
+  geom_smooth(se = FALSE) +
+  xlab("Seasonally adjusted unemployment") + 
+  ylab("Average hate crimes per 100,000 residents, 2010-2015")
+```
+
+There are no obvious trends. It seems like there is no relationship between the two variables.
+
+```{r}
+cor(x = hate_crimes$share_unemployed_seasonal,
+    y = hate_crimes$avg_hatecrimes_per_100k_fbi,
+    use = "complete.obs")
+```
+
+```{r}
+ggplot(hate_crimes,
+       aes(y = avg_hatecrimes_per_100k_fbi, x = gini_index)) +
+  geom_point(size = 1) +
+  geom_smooth(se = FALSE) +
+  xlab("Seasonally adjusted unemployment") + 
+  ylab("Average hate crimes per 100,000 residents, 2010-2015")
+```

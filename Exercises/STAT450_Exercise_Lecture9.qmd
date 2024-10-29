@@ -1,0 +1,68 @@
+---
+title: "Lecture 9, Exercises"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+```{r}
+head(flights)
+colnames(flights)
+```
+
+# Exercise 1
+
+Use filter() to find all flights that • Had an arrival delay of two or more hours. • Were operated by United (UA), American (AA), or Delta (DL).
+
+```{r}
+flights |>
+  select(arr_delay, dep_delay, carrier) |>
+  mutate(tot_delay_hrs = (dep_delay + arr_delay) / 60) |>
+  filter(tot_delay_hrs >= 2, carrier == "UA" | carrier == "AA" | carrier == "DL")
+```
+
+# Exercise 2
+
+Run the following code. Which three variables get selected by contains("dep"), and how are they related?
+
+```{r}
+flights |>
+select(year:day, carrier, contains("dep")) |> filter(carrier == "UA") |>
+  arrange(desc(dep_delay))
+```
+
+Contains("dep") captured all columns that contain the substring "dep". In this case dep_time, sched_dep_time, and dep_delay.
+
+# Exercise 3
+
+How many flights have a missing value for dep_time? What other variables have missing values? What might these rows represent? (Hint: use is.na())
+
+```{r}
+flights |>
+  filter(is.na(dep_time))
+```
+
+8255 NA values in flights\$dep_time. This means these flights have been cancelled
+
+# Exercise from tibbles.pdf
+
+Type the following into a code chunk in Quarto, and then render to HTML. How does printing a traditional data.frame in Quarto differ from printing a tibble?
+
+```{r}
+iris # print iris data.frame
+class(iris)
+iris_tb <- as_tibble(iris) # convert iris to a tibble iris_tb # print iris tibble
+iris_tb
+class(iris_tb)
+```
+
+data.frame is printed in entirety in html
+
+tibble prints something like head(n=10)

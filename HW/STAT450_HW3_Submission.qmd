@@ -1,0 +1,172 @@
+---
+title: "STAT450, Homework 3"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+# Exercise 1
+
+```{r}
+library(tidyverse)
+```
+
+# (a)
+
+```{r}
+ggplot(data = mpg, mapping = aes(y = cty, x = displ, color = drv)) +
+  geom_point() + geom_smooth(method="lm", se = FALSE)
+```
+
+# (b)
+
+```{r}
+ggplot(data = mpg, mapping = aes(y = cty, x = displ)) +
+  geom_point() + geom_smooth(method="lm", se = FALSE) +
+  facet_wrap(facets = vars(drv))
+```
+
+# (c)
+
+```{r}
+ggplot(data = mpg, mapping = aes(y = cty, x = displ)) +
+  geom_point(aes(color = drv)) + geom_smooth(method = "lm", se = FALSE, col = "black")
+```
+
+# (d)
+
+```{r}
+
+ggplot(data = mpg, mapping = aes(y = manufacturer, fill = class)) +
+  geom_bar()
+```
+
+# Exercise 2
+
+```{r}
+library(mosaicData)
+```
+
+```{r}
+head(CPS85)
+```
+
+```{r}
+dim(CPS85)
+help("CPS85")
+```
+
+# (a)
+
+```{r}
+ggplot(data = CPS85, mapping = aes(x = wage)) +
+  geom_histogram(binwidth = 3, col = "white", fill = "blue") 
+```
+
+```{r}
+ggplot(data = CPS85) +
+  geom_density(mapping = aes(x = wage), col = "blue")
+```
+
+The histogram and density plots for wage is unimodal, and it is skewed right
+
+# (b)
+
+```{r}
+ggplot(data = CPS85, mapping = aes(y = wage, x = sector)) +
+  geom_boxplot()
+```
+
+The two sectors with the highest median wage are "prof" and "manuf".\
+The "manuf" sector has the greatest variability in wage
+
+# (c)
+
+```{r}
+ggplot(data = CPS85, mapping = aes(x = sector)) +
+  geom_bar()
+```
+
+The "prof" sector has the highest number of employees. There are approximately 110 employees in the "prof" sector.
+
+# (d)
+
+```{r}
+ggplot(data = CPS85, mapping = aes(x = sector, fill = sex)) +
+  geom_bar()
+```
+
+# (e)
+
+```{r}
+ggplot(data = CPS85, mapping = aes(x = sector, fill = sex)) +
+  geom_bar(position = "fill")
+```
+
+The "prof" sector have roughly the same proportion of female and male employees. The sales sector is the next sector with the closest proportion of female and male employees.
+
+# Exercise 3
+
+```{r}
+library(maps)
+library(mapproj)
+
+```
+
+# (a)
+
+```{r}
+ca <- map_data("county", "ca")
+ggplot(data = ca, aes(x = long, y = lat, group = group)) +
+geom_polygon(fill = "white", color = "black") + coord_map()
+```
+
+# (b)
+
+```{r}
+head(ca)
+```
+
+```{r}
+unique(ca$subregion)
+length(unique(ca$subregion))
+```
+
+Explanation:
+
+unique(ca\$subregion) –\> creates a vector filled with unique values from the ca\$subregion.\
+length(unique(ca\$subregion)) –\> how many unique values there are in ca\$subregion
+
+# (c)
+
+```{r}
+alameda_ca <- filter(ca, subregion == "alameda")
+as_tibble(alameda_ca)
+```
+
+# (d)
+
+```{r}
+ggplot(data = alameda_ca, mapping = aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "white", color = "black") + coord_map()
+```
+
+# Bonus
+
+```{r}
+bay_area <- filter(ca, subregion == "alameda" | subregion == "contra costa" |
+                       subregion == "marin" | subregion == "napa" |
+                       subregion == "san francisco" | subregion == "san mateo" |
+                       subregion == "santa clara" | subregion == "solano" |
+                       subregion == "sonoma")
+unique(bay_area$subregion)
+length(unique(bay_area$subregion))
+```
+
+```{r}
+ggplot(data = bay_area, mapping = aes(x = long, y = lat, group = group, )) +
+  geom_polygon(mapping = aes(fill = subregion), color = "black") +
+  coord_map()
+```

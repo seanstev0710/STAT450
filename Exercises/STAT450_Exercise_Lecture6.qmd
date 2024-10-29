@@ -1,0 +1,59 @@
+---
+title: "Lecture 6, Exercises"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse, ggplot2)
+head(mpg)
+```
+
+# Exercise 1
+
+## 1 & 2
+
+```{r}
+ggplot(data = mpg)
+```
+
+Nothing is plotted because the mapping is not specified and it wasn't specified what type of plot
+
+## 3
+
+```{r}
+ggplot(data = mpg, aes(x = displ, y = hwy, )) +
+  geom_point(color = "purple", size = 0.7)
+```
+
+## 4
+
+```{r}
+ggplot(data = mpg, aes(x = displ, y = hwy, )) +
+  geom_point(color = "purple", size = 0.7) +
+  facet_wrap(facets = vars(drv))
+```
+
+# Exercise 2
+
+## 5
+
+```{r}
+ggplot(data = mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth(se = TRUE)
+```
+
+se = FALSE removes the visualization of the standard error of geom_smooth\
+
+## 6
+
+```{r}
+ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  facet_wrap(facets = vars(trans))
+```

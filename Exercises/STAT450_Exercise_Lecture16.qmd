@@ -1,0 +1,69 @@
+---
+title: "STAT450, Exercise Lecture 16"
+author: "Sean Steven C. Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(ISLR2)
+head(Boston)
+```
+
+# Exercise 1
+
+Use a for loop to simulate flipping a coin 10 times.
+
+```{r}
+
+for(i in 1:10){
+  coin_side <- runif(1)
+  if(coin_side > 0.5){
+    print("Heads")
+  } else {
+    print("Tails")
+  }
+}
+```
+
+# Exercise 2
+
+Compute the standard deviation of each column of Boston.
+
+```{r}
+# One way to do it
+apply(Boston, MARGIN = 2, FUN = sd)
+```
+
+```{r}
+# manual way to do it
+standard_dev <- c()
+for(i in 1:ncol(Boston)){
+  standard_dev[i] <- sd(Boston[,i])
+}
+names(standard_dev) <- names(Boston)
+standard_dev
+```
+
+# Exercise 3
+
+Write an R function called flip_coin(), which has one argument called n that specifies the number of flips. Set the default n=1. Here’s an example of what the output of your function should look like:
+
+```{r}
+flip_coin <- function(n = 1){
+  for(i in 1:n){
+    coin_side <- runif(1)
+    if(coin_side > 0.5){
+      print("Heads")
+    } else {
+      print("Tails")
+    }
+  }
+}
+```
+
+```{r}
+flip_coin(5)
+```

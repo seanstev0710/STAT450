@@ -1,0 +1,42 @@
+---
+title: "STAT450, Exercise Lecture 15"
+author: "Sean Steven C. Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+# Exercise 1
+
+Use pivot_wider() to make the following data set into a tidy data set:
+
+```{r}
+people <- tibble(
+name = c("John", "John", "Mary", "Mary", "Robert", "Robert"), X1 = c("gender", "age", "gender", "age", "gender", "age"),
+X2 = c("m", "29", "f", "36", "m", "40")
+)
+people
+```
+
+```{r}
+people |> 
+  pivot_wider(names_from = X1, values_from = X2)
+```
+
+# Exercise 2
+
+Use pivot_longer() to make the following data set into a tidy data set:
+
+```{r}
+table4b
+```
+
+```{r}
+table4b |>
+  pivot_longer(cols = c("1999", "2000"), names_to = "year", values_to = "cases")
+```

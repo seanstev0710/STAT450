@@ -1,0 +1,57 @@
+---
+title: "STAT450, Lecture 2 Exercise"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+# Exercise 1
+
+## (A)
+
+```{r}
+a_vector <- c(seq(0,100, by = 10))
+a_vector
+```
+
+# Exercise 2
+
+## (A)
+
+```{r}
+# Coerced to numeric
+x <- c(1, 0, FALSE, TRUE)
+# Coerced to character
+y <- c(1, 2, "three")
+# coerced to character
+z <- c("TRUE", FALSE)
+```
+
+```{r}
+x
+class(x)
+y
+class(y)
+z
+class(z)
+```
+
+# Exercise 3
+
+```{r}
+weight <- c(140, 139, 187, 191, 131)
+weight[2:3] # (139, 187, 191)
+weight [-c(3:5)] # (140, 139)
+weight > 150 # (FALSE, FALSE, TRUE, TRUE, FALSE)
+weight[weight > 150] #(187, 191)
+sum(weight > 150) # 278 X It Prints the number of TRUE
+```
+
+# Exercise 4
+
+```{r}
+x <- seq(1,10)
+y <- seq(11,20)
+z <- seq(21,30)
+```

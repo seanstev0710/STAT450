@@ -1,0 +1,182 @@
+---
+title: "STAT450, Homework 1"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+---
+
+# Exercise 1
+
+## (a)
+
+The four common vector data types are logical, integer, numeric, and character
+
+## (b)
+
+```{r}
+a <- c(1, 2, 3, 4, 5)
+b <- 1:5
+c <- c("blue", "orange", "red")
+d <- c(T, T, T, T)
+e <- c("1", 2, 3)
+f <- c(7, NA, NA, 5 , 3)
+g <- c(7, "NA", "NA", 5 , 3)
+h <- c()
+```
+
+```{r}
+a
+class(a)
+```
+
+```{r}
+b
+class(b)
+```
+
+```{r}
+c
+class(c)
+```
+
+```{r}
+d
+class(d)
+```
+
+```{r}
+e
+class(e)
+```
+
+```{r}
+f
+class(f)
+```
+
+```{r}
+g
+class(g)
+```
+
+```{r}
+h
+class(h)
+```
+
+# Exercise 2
+
+```{r}
+vector_of_squares <- as.integer((1:100) * (1:100))
+vector_of_squares[1:5]
+sum(vector_of_squares)
+```
+
+# Exercise 3
+
+```{r}
+head(rivers)
+```
+
+## (a)
+
+```{r}
+# mean of river lengths
+mean(rivers)
+# standard deviation of river lengths
+sd(rivers)
+```
+
+## (b)
+
+```{r}
+# Longest river length
+max(rivers)
+# shortest river length
+min(rivers)
+```
+
+## (c)
+
+```{r}
+# Number of rivers with length greater than 1000
+sum(rivers > 1000)
+```
+
+## (d)
+
+```{r}
+# Percentage of rivers in the "rivers" dataset with length greater than 1000
+(sum(rivers > 1000) / length(rivers)) * 100
+```
+
+12.8% of the rivers in the data set are \> 1000
+
+# Exercise 4
+
+```{r}
+head(airquality)
+```
+
+```{r}
+Ozone1 <- airquality$Ozone
+```
+
+## (a)
+
+```{r}
+# remove NAs from Ozone1 and store in Ozone2
+Ozone2 <- Ozone1[!is.na(Ozone1)]
+# Count of NAs Removed
+length(Ozone1) - length (Ozone2)
+```
+
+37 NAs were removed from Ozone1
+
+## (b)
+
+```{r}
+min(Ozone2)
+median(Ozone2)
+mean(Ozone2)
+max(Ozone2)
+sd(Ozone2)
+```
+
+## (c)
+
+```{r}
+# This is to test behavior of min median mean and max for datasets with NA
+min(Ozone1)
+median(Ozone1)
+mean(Ozone1)
+max(Ozone1)
+```
+
+```{r}
+summary(airquality$Ozone)
+```
+
+Summary takes the argument and gives a summary of the dataset. The summary ignored the the NA values when calculating the 1st quartile, the mean, the median, the 3rd quartile, the highest value. It also displays the total number of NAs.
+
+```{r}
+sd(airquality$Ozone)
+```
+
+sd takes the standard deviation of the dataset. The result is NA because there are 37 NA values in the Ozone column of air quality
+
+```{r}
+sd(airquality$Ozone, na.rm = TRUE)
+```
+
+Similar to the previous code block, but this one has an answer because all the NAs have been removed by the "na.rm = TRUE" argument
+
+# Exercise 5
+
+```{r}
+plot(y = airquality$Ozone, x = airquality$Temp,
+     ylab = "Ozone (pbb)", xlab = "Temperature (degrees F)")
+```
+
+There is a positive relationship between the temperature and the Ozone dataset. It seems like a linear relationship.

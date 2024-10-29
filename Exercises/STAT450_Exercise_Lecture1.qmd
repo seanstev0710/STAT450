@@ -1,0 +1,23 @@
+---
+title: "STAT450, Lecture 1 Exercise"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+# (A)
+
+```{r}
+price <- 47.5
+tip = price * 0.2
+tip
+```
+
+# (B)
+
+```{r}
+total = price + tip
+total
+```

@@ -1,0 +1,63 @@
+---
+title: "STAT450, Lecture 5 Exercise"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+cdc <- read.csv("https://ericwfox.github.io/data/cdc1000.csv")
+cdc
+```
+
+```{r}
+barplot(table(cdc$smoke100), names.arg = c("No", "Yes"),
+        xlab = "Smoked at least 100 cigarettes", ylab = "Counts")
+```
+
+# Exercise 1
+
+```{r}
+addmargins(table(gender = cdc$gender, smoke100 = cdc$smoke100))
+```
+
+According to the contingency table above, what proportion of males have smoked at least 100 cigarettes
+
+```{r}
+252/488 * 100
+```
+
+51.6% of males have smoked at least 100
+
+# Exercise 2
+
+Create a bar plot of genhlth with categories ordered as poor, fair, good, very good, excellent
+
+```{r}
+gen_health <- factor(levels = c("poor", "fair", "good", "very good", "excellent"),
+                     cdc$genhlth)
+barplot(table(gen_health), ylab = "Count", xlab = "Health Level",)
+```
+
+# Exercise 3
+
+Make a histogram and box plot for wtdesire. Describe the shape of the distribution
+
+```{r}
+boxplot(cdc$wtdesire, main = "Weight Desired",
+        horizontal = TRUE, xlab = "weight desired(lbs)")
+hist(cdc$wtdesire, main = "Weight Desired", xlab = "weight desired(lbs)", )
+```
+
+Right-skewed distribution
+
+# Random
+
+```{r}
+gender <- factor(cdc$gender, levels = c("m, f"))
+gender <- cdc$gender |> if ( . == "m" then)
+plot(cdc$height ~ cdc$wtdesire, col = gender,
+     xlab = "Height(inches)", ylab = "Weight Desired(lbs)")
+```

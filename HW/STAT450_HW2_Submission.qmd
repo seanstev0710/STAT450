@@ -1,0 +1,61 @@
+---
+title: "STAT450, Homework 2"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+cdc <- read.csv("https://ericwfox.github.io/data/cdc1000.csv")
+head(cdc)
+```
+
+# Exercise 1
+
+```{r}
+exerany_table <- table(cdc$exerany)
+barplot(exerany_table, names.arg = c("no", "yes"),
+        xlab = "Exercised in the last Month")
+```
+
+# Exercise 2
+
+```{r}
+plot(cdc$height ~ cdc$wtdesire, ylab = "Height (inches)",
+     xlab = "Weight Desired (lbs)")
+```
+
+Explain association:
+
+There is a positive association between Height and Weight Desired. It seems like there is also a linear association between the two
+
+# Exercise 3
+
+```{r}
+genhlth_fac <- factor(x = cdc$genhlth,
+                      levels = c("poor", "fair", "good", "very good", "excellent"))
+boxplot(cdc$weight ~ genhlth_fac, ylab = "Weight", xlab = "General Health")
+```
+
+# Exercise 4
+
+```{r}
+wtdiff <- cdc$wtdesire - cdc$weight
+summary(wtdiff)
+```
+
+```{r}
+hist(wtdiff, xlab = "Difference(lbs)",
+        main = "Difference in Weight Desired and Current Weight")
+```
+
+```{r}
+boxplot(wtdiff, horizontal = TRUE, xlab = "Difference(lbs)",
+        main = "Difference in Weight Desired and Current Weight")
+```
+
+Explain:
+
+The dataset is unimodal since there is only one peak, and it is slightly left-skewed. There are also outliers since there are values that lie outside the whiskers of the box plot.

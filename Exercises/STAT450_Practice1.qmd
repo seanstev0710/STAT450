@@ -1,0 +1,108 @@
+---
+title: "STAT451, Practice 1"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library("tidyverse")
+head(mpg)
+```
+
+# Exercise 1
+
+## (a)
+
+```{r}
+mpg |> filter(cty < 17)
+```
+
+## (b)
+
+```{r}
+mpg |> filter(cty < 17, class == "midsize")
+```
+
+## (c)
+
+```{r}
+mpg |> filter(cty < 17, class == "midsize", drv == "f")
+```
+
+## (d)
+
+```{r}
+mpg |> filter(manufacturer %in% c("honda", "hyundai", "subaru"))
+```
+
+# Exercise 2
+
+```{r}
+mpg_with_diff <- mpg |> mutate(mpg_diff = hwy - cty)
+```
+
+```{r}
+ggplot(mpg_with_diff, aes(x = mpg_diff)) + geom_histogram(binwidth = 1, col = "white")
+```
+
+```{r}
+ggplot(mpg_with_diff, aes(x = mpg_diff)) + geom_density()
+```
+
+# Exercise 3
+
+## (a)
+
+```{r}
+
+mpg |> group_by(class) |> 
+  summarize(count = n())
+```
+
+## (b)
+
+```{r}
+mpg |> group_by(class) |> 
+  summarize(cty_mean = mean(cty))
+```
+
+## (c)
+
+```{r}
+mpg |> group_by(class) |> 
+  summarize(cty_sd = sd(cty))
+```
+
+## (d)
+
+```{r}
+mpg |> group_by(class) |> 
+  summarize(hwy_mean = mean(hwy, na.rm = TRUE))
+```
+
+## (e)
+
+```{r}
+mpg |> group_by(class) |> 
+  summarize(hwy_sd = sd(hwy, na.rm = TRUE))
+```
+
+## Final
+
+```{r}
+mpg |> group_by(class) |> 
+  summarize(count = n(),
+            cty_mean = mean(cty, na.rm = TRUE), cty_sd = sd(cty, na.rm = TRUE),
+            hwy_mean = mean(hwy, na.rm = TRUE), hwy_sd = sd(hwy, na.rm = TRUE))
+```
+
+# Exercise 4
+
+```{r}
+mpg |> group_by(class) |>
+  summarize(proportion_hwy_over_25 = mean(hwy > 25, na.rm = TRUE)) |> 
+  arrange(desc(proportion_hwy_over_25))
+```

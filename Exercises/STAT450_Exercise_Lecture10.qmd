@@ -1,0 +1,45 @@
+---
+title: "STAT450, Exercise, Lecture 10"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library("tidyverse")
+library("nycflights13")
+head(mpg)
+```
+
+# Exercise 1
+
+Using the mpg data frame, for each car manufacturer, compute the count, average city miles per gallon, and average highway miles per gallon.
+
+```{r}
+mpg |> group_by(manufacturer) |> 
+  summarize(count = n(), mean_mpg_cty = mean(cty), mean_mpg_hwy = mean(hwy))
+```
+
+# Exercise 2
+
+For each carrier, compute the number of flights and median departure delay. Which carrier has the longest median departure delay?
+
+```{r}
+flights |> group_by(carrier) |>
+  summarize(count = n(), median_dep_delay = median(dep_delay, na.rm = TRUE))
+```
+
+FL is the carrier with the highest median departure delay.
+
+# Exercise 3
+
+For each carrier, compute the proportion of flights that were delayed more than 5 minutes (i.e., the departure delay was greater than 5 minutes). Which carrier has the smallest proportion of delays?
+
+```{r}
+flights |> group_by(carrier) |> 
+  summarize(delay_proportion = mean(dep_delay > 5, na.rm = TRUE)) 
+```
+
+The HA carrier has the smallest proportion of delays

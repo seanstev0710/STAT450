@@ -1,0 +1,61 @@
+---
+title: "STAT450, Exercise Lecture 11"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library("tidyverse")
+```
+
+```{r}
+head(diamonds)
+```
+
+# Exercise 1
+
+Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Try adjusting the bindwidth of the histogram)
+
+```{r}
+ggplot(diamonds, aes(x = price)) +
+  geom_histogram(binwidth = 200, bins = 30)
+```
+
+# Exercise 2
+
+How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?
+
+```{r}
+diamonds |> summarize(carat99 = sum(carat == 0.99), carat1 = sum(carat == 1))
+```
+
+It is possible that they want diamonds to become whole number measure of carat. It is possible 0.99 carat diamonds are "failed" cut diamonds.
+
+# Exercise 3
+
+Use the dplyr functions group_by() and summarize() to compute the median of carat for each category of cut. Also compute the median of price for each category of cut. Does anything stand out or surprise you when examining the relationships in this table?
+
+```{r}
+diamonds |>  group_by(cut) |>
+  summarize(count = n(),
+            median_carat = median(carat, rm.na = TRUE),
+            median_price = median(price, rm.na = TRUE)) |> 
+  arrange(desc(count))
+```
+
+It seems likes Fair cut diamonds have a higher median carat compared to the other types of cut.
+
+# Exercise 4
+
+Visualize the combined distribution of cut, carat, and price.
+
+Below we divide carat into 5 bins (intervals), and then use box plots to investigate the relationship between cut and price within each carat bin. Generally, we see that as carat increases, price increases (positive association). Additionally, we see that for diamonds within each carat bin (i.e., diamonds of similar weight), price tends to increase as the quality of the cut improves.
+
+```{r}
+ggplot(data = diamonds, aes(x = cut_number(carat, 5), y = price, color = cut)) +
+  geom_boxplot() +
+  xlab("carat bins")
+```

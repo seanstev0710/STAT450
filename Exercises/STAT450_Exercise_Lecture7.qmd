@@ -1,0 +1,64 @@
+---
+title: "Lecture 7,  Exercises"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+# Exercise 1
+
+```{r}
+library(ggplot2)
+library(maps)
+library(mapproj)
+```
+
+## (a)
+
+Make a map of California without including coord_map(). How does the map visualization change? Is it better or worse?\
+
+```{r}
+ca <- map_data(map = "state", region = "california")
+ggplot(ca, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = 'white', color = "black") +
+  coord_map()
+```
+
+```{r}
+ca <- map_data(map = "state", region = "california")
+ggplot(ca, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = 'white', color = "black") 
+```
+
+coord_map() scales the resolution of the map
+
+## (b)
+
+Make a map of another state of your choosing.
+
+```{r}
+ut <- map_data(map = "state", region = "utah")
+ggplot(az, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = 'white', color = "black") +
+  coord_map()
+```
+
+# Random
+
+```{r}
+for (i in world.cities$country.etc) {
+  if (country == "Philippines") {
+    
+  }
+}
+```
+
+```{r}
+world.cities$country.etc
+ut <- map_data(map = world.cities, region = "utah")
+ggplot(az, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = 'white', color = "black") +
+  coord_map()
+```

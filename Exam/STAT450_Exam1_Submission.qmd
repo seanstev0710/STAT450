@@ -1,0 +1,161 @@
+---
+title: "STAT450, Exam 1"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(nycflights13)
+library(tidyverse)
+```
+
+```{r}
+options(digits=2)
+```
+
+```{r}
+head(flights)
+```
+
+# Question 1
+
+## (a)
+
+```{r}
+flights |>
+  filter(dest == "SFO")
+```
+
+## (b)
+
+```{r}
+flights |>
+  filter(month %in% c(6, 7, 8))
+```
+
+## (c)
+
+```{r}
+flights |>
+  filter(year == 2013, month == 10, day == 31, origin == "LGA")
+```
+
+## (d)
+
+```{r}
+flights |>
+  filter(dep_delay >= 30, carrier == "WN")
+```
+
+## (e)
+
+```{r}
+flights |> filter(carrier == "WN", is.na(dep_time))
+```
+
+# Question 2
+
+```{r}
+flights_by_carrier <- flights |> 
+  group_by(carrier) |> 
+  summarize(count = n(), dep_delay_mean = mean(dep_delay, na.rm = TRUE),
+            arr_delay_mean = mean(arr_delay, na.rm = TRUE ),
+            canceled = sum(is.na(dep_time)))
+```
+
+```{r}
+as.data.frame(flights_by_carrier)
+```
+
+# Question 3
+
+```{r}
+ggplot(flights_by_carrier, aes(y = dep_delay_mean, x = arr_delay_mean)) +
+  geom_point(aes(size = canceled)) +
+  geom_text(aes(label = carrier), nudge_x = -1, nudge_y = 0.5) +
+  xlab("Mean Arrival Delay") +
+  ylab("Mean Departure Delay")
+```
+
+There is a positive relationship between the mean departure delay and the mean arrival delay of flights. There is also approximately a linear relationship between the two variables. The carrier "EV" has the highest number of canceled flights.
+
+# Question 4
+
+## (a)
+
+```{r}
+flights_by_carrier |> 
+  arrange(desc(count))
+```
+
+UA carrier has the highest number (58665) of flights departing from NYC, included in this are the flights that were canceled. Even if only the flights that were not canceled are counted, UA still has the highest number (57979) of flights that departed from NYC.
+
+## (b)
+
+```{r}
+flights_by_carrier |> 
+  arrange(desc(arr_delay_mean))
+```
+
+Carrier F9 has the longest average arrival delay at 21.92 mins.
+
+## (c)
+
+```{r}
+flights_by_carrier |> 
+  arrange(arr_delay_mean)
+```
+
+Carrier AS has the shortest average arrival delay at -9.93 minutes. A negative value means flights arrived earlier than the expected arrival time.
+
+## (d)
+
+```{r}
+flights_by_carrier |> 
+  arrange(desc(canceled))
+```
+
+Carrier EV has the highest number of canceled flights.
+
+# Question 5
+
+## (a)
+
+```{r}
+ggplot(flights, aes(x = hour)) +
+  geom_bar()
+```
+
+## (b)
+
+```{r}
+ggplot(flights, aes(x = hour)) +
+  facet_wrap(facets = vars(origin)) + 
+  geom_bar()
+```
+
+## (c)
+
+```{r}
+ggplot(flights, aes(x = air_time)) +
+  geom_histogram() +
+  xlab("Air Time (hours)")
+```
+
+## (d)
+
+```{r}
+ggplot(flights, aes(x = carrier, fill = origin)) +
+  geom_bar()
+```
+
+## (e)
+
+```{r}
+ggplot(flights, aes(x = carrier, fill = origin)) +
+  geom_bar(position = "fill") +
+  ylab("proportion")
+```

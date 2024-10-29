@@ -1,0 +1,63 @@
+---
+title: "STAT450, Exercise Lecture 14"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+```{r}
+flights
+```
+
+```{r}
+airlines
+```
+
+```{r}
+flights2 <- flights |>
+select(year:day, hour, origin, dest, tailnum, carrier)
+flights2
+```
+
+```{r}
+# join flights2 with airlines by the column carrier
+# only joins rows that have carrier in both tables are joined
+inner_join(flights2, airlines, by = "carrier")
+```
+
+# Exercise 1
+
+Use group_by() and summarize() to compute the average arrival delay for each carrier. Then use left_join() to include a column with the full carrier name.
+
+```{r}
+flights |> 
+  group_by(carrier) |> 
+  summarize(count = n(), arr_delay_mean = mean(arr_delay, na.rm = TRUE)) |> 
+  left_join(airlines, by = "carrier")
+  
+```
+
+# Exercise 2
+
+```{r}
+airports
+```
+
+```{r}
+flights2 |>
+  left_join(airports, by = c("dest" = "faa")) |> glimpse()
+```
+
+Modify the code above so that flights2 contains additional columns with information about the origin airport.
+
+```{r}
+flights2 |>
+  left_join(airports, by = c("origin" = "faa"))
+```
