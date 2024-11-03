@@ -1,0 +1,136 @@
+---
+title: "STAT450, Exam 2"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+```{r}
+options(digits=3)
+```
+
+# Question 1
+
+```{r}
+votes <- read_csv("votes.csv")
+```
+
+```{r}
+head(votes)
+```
+
+```{r}
+counties <- read_csv("county.csv")
+```
+
+```{r}
+head(counties)
+```
+
+## (a)
+
+```{r}
+counties |> 
+  count(fips) |> 
+  filter(n > 1)
+```
+
+fips is unique in counties dataframe
+
+## (b)
+
+```{r}
+county_votes <- inner_join(counties, votes, by = "fips")
+```
+
+```{r}
+head(county_votes)
+```
+
+## (c)
+
+```{r}
+county_votes <- county_votes |>
+  mutate(pct_clinton = 100 * votes_clinton / total_votes)
+```
+
+```{r}
+head(county_votes)
+```
+
+## (d)
+
+```{r}
+ggplot(county_votes, aes(x = pct_bachelors, y = pct_clinton)) +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  xlab("People with Bachelor's degree and age 25+ (Percentage)") +
+  ylab("Clinton Votes (Percentage)")
+```
+
+There is a positive but non-linear relationship between pct_clinton and pct_bachelors.
+
+## (e)
+
+```{r}
+#top 10 counties in CA with the lowest pct_clinton value
+county_votes |>
+  filter(state == "CA") |> 
+  select(fips, county, pct_clinton) |> 
+  arrange(pct_clinton) |> 
+  head(10)
+```
+
+```{r}
+#top 10 counties in CA with the highest pct_clinton value
+county_votes |>
+  filter(state == "CA") |> 
+  select(fips, county, pct_clinton) |> 
+  arrange(desc(pct_clinton)) |> 
+  head(10)
+```
+
+# Question 2
+
+```{r}
+flights |> 
+  group_by(origin) |> 
+  summarize(count = n(), dep_delay_mean = mean(dep_delay, na.rm = TRUE)) |> 
+  inner_join(airports, by = c("origin" = "faa")) |> 
+  select(name, origin:tzone) |> 
+  arrange(count)
+```
+
+# Question 3
+
+```{r}
+glimpse(weather)
+```
+
+## (a)
+
+```{r}
+col_total_na <- c()
+
+```
+
+```{r}
+for(i in 1:ncol(weather)){
+  col_total_na[i] <- sum(is.na(weather[,i]))
+}
+names(col_total_na) <- names(weather)
+col_total_na
+```
+
+## (b)
+
+```{r}
+apply(is.na(weather), MARGIN = 2, FUN = sum)
+```
