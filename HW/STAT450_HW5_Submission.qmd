@@ -1,0 +1,108 @@
+---
+title: "STAT450, HW5"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+# Question 1
+
+**Question: Use an appropriate lubridate function to parse each of the following dates. That is, convert each string to a date object in R.**
+
+```{r}
+t1 <- "10/31/2024"
+t2 <- "31-10-2024"
+t3 <- "October 31, 2024"
+```
+
+```{r}
+class(mdy(t1))
+mdy(t1)
+```
+
+```{r}
+class(dmy(t2))
+dmy(t2)
+```
+
+```{r}
+class(mdy(t3))
+mdy(t3)
+```
+
+# Question 2
+
+```{r}
+sfcrimes2023 <- readRDS(url("https://ericwfox.github.io/data/sfcrimes2023.rds"))
+glimpse(sfcrimes2023)
+```
+
+## (a)
+
+```{r}
+sfcrime_larceny_theft <- sfcrimes2023 |>
+  filter(category == "Larceny Theft") |> 
+  mutate(datetime = ymd_hms(datetime))
+```
+
+```{r}
+sfcrime_larceny_theft
+```
+
+## (b)
+
+```{r}
+sfcrime_larceny_with_specific_time <- sfcrime_larceny_theft  |> 
+  mutate(date = date(datetime),
+         month = month(datetime, label = TRUE),
+         day_of_week = wday(datetime, label = TRUE),
+         hour = hour(datetime)) |> 
+  select(police_district, date:hour)
+```
+
+```{r}
+sfcrime_larceny_with_specific_time
+```
+
+## (c)
+
+```{r}
+ggplot(sfcrime_larceny_with_specific_time, aes(x = hour)) +
+  geom_bar() +
+  ggtitle("Count of Larceny Thefts per hour in SF (2023)")
+```
+
+## (d)
+
+```{r}
+ggplot(sfcrime_larceny_with_specific_time, aes(x = day_of_week)) +
+  geom_bar() +
+  ggtitle("Count of Larceny Thefts per day in SF (2023)")
+```
+
+## (e)
+
+```{r}
+sfcrime_larceny_with_specific_time |> 
+  group_by(date) |> 
+  summarize(count = n()) |> 
+  ggplot(aes(x = date, count)) +
+  geom_line() +
+  geom_smooth() +
+  ggtitle("Count of daily Larceny Thefts in SF (2023)")
+```
+
+## (f)
+
+Maybe because of how Larceny Theft is defined, the highest counts of larceny theft is during the typical work hours which is from 10am to 8pm.
+
+There is no specific day of the week where larceny theft is a lot more common, it is pretty much even through out, but Fridays have the highest counts of larceny theft.
+
+Finally there are three notable points by day where larceny theft spiked. One is just before July, which is probably during Juneteenth. The second one is somewhere between July and October, and my guess is this is during Labor Day. And the last point is on October. The overall trend for the count of daily larceny thefts in SF is downward from January towards December, with a slight increase around the month of July.
