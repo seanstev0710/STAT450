@@ -110,22 +110,17 @@ flights |>
 
 # Question 3
 
-```{r}
-glimpse(weather)
-```
-
 ## (a)
 
 ```{r}
 col_total_na <- c()
-
-```
-
-```{r}
 for(i in 1:ncol(weather)){
   col_total_na[i] <- sum(is.na(weather[,i]))
 }
 names(col_total_na) <- names(weather)
+```
+
+```{r}
 col_total_na
 ```
 
