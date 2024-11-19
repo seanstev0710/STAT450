@@ -1,0 +1,67 @@
+---
+title: "STAT450, Homework 6"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+glimpse(gss_cat)
+```
+
+# Exercise 1
+
+```{r}
+gss_cat |> 
+  count(relig) |> 
+  arrange(desc(n))
+```
+
+Answer:
+
+The most common religion that responded to the survey is Protestant.
+
+# Exercise 2
+
+```{r}
+gss_cat2 <- gss_cat |>
+  mutate(partyid = fct_recode(partyid,
+    "Republican, strong"    = "Strong republican",
+    "Republican, weak"      = "Not str republican",
+    "Independent, near rep" = "Ind,near rep",
+    "Independent, near dem" = "Ind,near dem",
+    "Democrat, weak"        = "Not str democrat",
+    "Democrat, strong"      = "Strong democrat"
+))
+```
+
+```{r}
+glimpse(gss_cat2)
+```
+
+```{r}
+gss_cat2 |> 
+  group_by(partyid) |> 
+  summarize(ave_age = mean(age, na.rm = TRUE)) |> 
+  ggplot(aes(y = fct_reorder(partyid, ave_age), x = ave_age)) +
+  geom_point() +
+  ylab("Party Affiliation") +
+  xlab("Average Age")
+```
+
+# Exercise 3
+
+```{r}
+gss_cat2 |> 
+  group_by(partyid) |> 
+  ggplot(aes(y = fct_rev(fct_infreq(partyid)))) +
+  geom_bar() +
+  ylab("Party Affiliation") +
+  xlab("Count")
+```
