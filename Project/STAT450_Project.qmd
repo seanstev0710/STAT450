@@ -1,0 +1,350 @@
+---
+title: "STAT450, Project"
+author: "Sean Steven Alcantara"
+format: 
+  html:
+    self-contained: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(mapproj)
+library(maps)
+```
+
+# Load Dataset
+
+```{r}
+options(digits = 2)
+```
+
+```{r}
+road_accidents <- read.csv("US_Accidents_March23.csv")
+```
+
+```{r}
+dim(road_accidents)
+```
+
+# Variables that will be used and description
+
+## Dataset Description from the source
+
+This is a countrywide car accident dataset that covers **49 states of the USA**. The accident data were collected from **February 2016 to March 2023**, using multiple APIs that provide streaming traffic incident (or event) data. These APIs broadcast traffic data captured by various entities, including the US and state departments of transportation, law enforcement agencies, traffic cameras, and traffic sensors within the road networks.
+
+## Variables
+
+**Severity**
+
+Shows the severity of the accident, a number between 1 and 4, where 1 indicates the least impact on traffic (i.e., short delay as a result of the accident) and 4 indicates a significant impact on traffic (i.e., long delay).
+
+**Start_Time**
+
+Shows start time of the accident in local time zone.
+
+**Start_Lat**
+
+Shows latitude in GPS coordinate of the start point.
+
+**Start_Lng**
+
+Shows longitude in GPS coordinate of the start point.
+
+**Crossing**
+
+A POI annotation which indicates presence of crossing in a nearby location.
+
+**Junction**
+
+A POI annotation which indicates presence of junction in a nearby location.
+
+**Traffic_Signal**
+
+A POI annotation which indicates presence of traffic_signal in a nearby location.
+
+# Cleanup
+
+```{r}
+accidents <- road_accidents %>% 
+  select(Severity, Start_Time, State, County, Start_Lat, Start_Lng,
+         Weather_Condition, Amenity:Turning_Loop) %>% 
+  mutate(Start_Time = ymd_hms(Start_Time)) %>% 
+  mutate(Severity = as.character(Severity),
+         year = year(Start_Time),
+         date = date(Start_Time),
+         month = month(Start_Time, label = TRUE),
+         wday = wday(Start_Time, label = TRUE),
+         hour = hour(Start_Time)) %>% 
+  filter(! year %in% c(2016, 2023))
+```
+
+```{r}
+head(accidents[,8:20])
+```
+
+```{r}
+sum(is.na(apply(accidents[,8:20], MARGIN = 2, FUN = as.logical)))
+```
+
+```{r}
+accidents[,8:20] <- apply(accidents[,8:20], MARGIN = 2, FUN = as.logical)
+```
+
+```{r}
+head(accidents)
+```
+
+```{r}
+accidents %>% 
+  group_by(State) %>% 
+  summarize(count = n()) %>% 
+  arrange(desc(count)) %>% 
+head()
+```
+
+```{r}
+bay_area <- c("Alameda", "Contra Costa", "Sonoma", "Napa", "Solano",
+              "Marin", "San Francisco", "San Mateo", "Santa Clara")
+```
+
+```{r}
+accidents_bay_area <- accidents %>% 
+  filter(State == "CA", County %in% bay_area)
+```
+
+# Visualizations
+
+## 1.) Scatter Plot separated by years
+
+```{r}
+ggplot(accidents_bay_area, aes(x = month)) +
+  geom_bar(col = "black") +
+  facet_wrap(~year, ncol = 2) +
+  guides(x = guide_axis(angle = 90)) +
+  ggtitle("Bay Area Accidents")
+```
+
+```{r}
+ggsave("accident_facet_year.png", plot = last_plot())
+```
+
+## 2.) Barplot of accidents per month (2020)
+
+```{r}
+accidents_bay_area_2020 <- accidents_bay_area %>%
+  filter(year == 2020)
+```
+
+```{r}
+accidents_bay_area_2020 %>% 
+  ggplot(aes(x = month)) +
+  scale_fill_brewer(palette = "BuGn") +
+  geom_bar(position = "stack", aes(fill = Severity), col = "black") +
+  ggtitle("Bay Area monthly accidents (2020)")
+  
+```
+
+```{r}
+ggsave("accident_barplot_per_month_2020_bayarea_stack.png", plot = last_plot())
+```
+
+```{r}
+accidents_bay_area_2020 %>%
+  ggplot(aes(x = month)) +
+  scale_fill_brewer(palette = "BuGn") +
+  geom_bar(position = "fill", aes(fill = Severity), col = "black") +
+  ylab("proportion") +
+ggtitle("Bay Area monthly accidents (2020)")
+```
+
+```{r}
+ggsave("accident_barplot_per_month_2020_bayarea_fill.png", plot = last_plot())
+```
+
+## 3.) Histogram of accidents per hour bay area
+
+```{r}
+ggplot(accidents_bay_area, aes(x = hour)) +
+  scale_fill_brewer(palette = "Blues") +
+  geom_histogram(aes(group = Severity, fill = Severity),
+                 col = "black", bins = 24) +
+  ggtitle("Bay Area hourly accidents (2020)")
+```
+
+```{r}
+ggsave("accident_histogram_per_hour.png", plot = last_plot())
+```
+
+## 4. ) Map location of accidents in the bay area from July to October
+
+```{r}
+accidents_bay_area_2020_Jul_Oct <- accidents_bay_area_2020 %>% 
+  filter(month %in% c("Jul", "Aug", "Sep", "Oct"))
+```
+
+```{r}
+head(accidents_bay_area_2020_Jul_Oct)
+```
+
+```{r}
+bay_area_lowercase <- tolower(bay_area)
+```
+
+```{r}
+bay_area_map <- map_data("county", "california") %>% 
+  filter(subregion %in% bay_area_lowercase)
+```
+
+```{r}
+head(bay_area_map)
+```
+
+```{r}
+ggplot() +
+  geom_polygon(data = bay_area_map, aes(x=long, y = lat, group = group),
+               fill = "white", color = "black") +
+  geom_point(data = accidents_bay_area_2020_Jul_Oct,
+             aes(x=Start_Lng, y = Start_Lat), alpha = 0.1) +
+  coord_map() +
+  ylab("Latitude") +
+  xlab("Longitude") +
+  ggtitle("Bay Area accidents from (July-Oct 2020)")
+```
+
+```{r}
+ggsave("accident_map_2020_Jul_Oct.png", plot = last_plot())
+```
+
+## Severity \>= 3 primarily happens on freeways in the SF Bay Area
+
+```{r}
+accidents_bay_area_severity_3plus <- accidents_bay_area %>%
+  filter(Severity >=3, year >= 2020)
+```
+
+```{r}
+ggplot() +
+  geom_polygon(data = bay_area_map, aes(x=long, y = lat, group = group),
+               fill = "white", color = "black") +
+  geom_point(data = accidents_bay_area_severity_3plus,
+             aes(x=Start_Lng, y = Start_Lat), alpha = 1) +
+  coord_map() +
+  ylab("Latitude") +
+  xlab("Longitude") +
+  ggtitle("Bay Area accidents with severity 3+ (2020-2022)")
+```
+
+```{r}
+ggsave("accident_map_bayarea_severity3plus.png", plot = last_plot())
+```
+
+## leaflet since to show the roads that is not on the ggplot above
+
+```{r}
+library(leaflet)
+```
+
+```{r}
+leaflet(data = accidents_bay_area_severity_3plus) %>% 
+  addTiles() %>% 
+  addCircleMarkers(
+    lng = ~Start_Lng,
+    lat = ~Start_Lat,
+    popup = ~paste(Start_Time, "<br>", "Severity =", Severity),
+    radius = 1
+  )
+```
+
+# 6.) nearby POIs where accidents happen
+
+```{r}
+accident_count <- nrow(accidents_bay_area)
+accident_count
+```
+
+```{r}
+POI_accidents <- accidents_bay_area %>%
+  select(Amenity:Turning_Loop, Severity) %>% 
+  pivot_longer(Amenity:Turning_Loop, names_to = "POI") %>% 
+  select(POI, value, Severity) %>% 
+  mutate(POI = as.factor(POI))
+```
+
+```{r}
+head(POI_accidents)
+```
+
+```{r}
+POI_accidents %>%
+  filter(value == TRUE) %>% 
+  ggplot(aes(y = fct_rev(fct_infreq(POI)))) +
+  scale_fill_brewer(palette = "BuGn") +
+  geom_bar(aes(fill = Severity), position = "stack", col = "black") +
+  ylab("POI") +
+  ggtitle("Bay Area Accidents near a Point of Interest (POI)")
+```
+
+```{r}
+ggsave("accidents_stackbar_POI.png", plot = last_plot())
+```
+
+```{r}
+POI_accidents %>%
+  filter(value == TRUE) %>% 
+  ggplot(aes(y = fct_rev(fct_infreq(POI)))) +
+  scale_fill_brewer(palette = "BuGn") +
+  geom_bar(aes(fill = Severity), position = "fill", col = "black") +
+  ylab("POI") +
+  xlab("Proportion") +
+  ggtitle("Bay Area Accidents near a Point of Interest (POI)")
+```
+
+```{r}
+ggsave("accidents_fillbar_POI.png", plot = last_plot())
+```
+
+# 7.) Weather conditions when accidents happen
+
+```{r}
+Weather_accidents <- accidents_bay_area %>% 
+  filter(Weather_Condition != "") %>% 
+  select(Weather_Condition, Severity)
+```
+
+```{r}
+head(Weather_accidents)
+```
+
+```{r}
+top_weather_conditions <- Weather_accidents %>%
+  group_by(Weather_Condition) %>% 
+  summarize(count = n()) %>% 
+  arrange(desc(count)) %>% 
+  head(10) %>% 
+  select(Weather_Condition)
+```
+
+```{r}
+Weather_accidents%>% 
+  filter(Weather_Condition %in% top_weather_conditions$Weather_Condition) %>% 
+  ggplot(aes(y = fct_rev(fct_infreq(Weather_Condition)))) +
+  scale_fill_brewer(palette = "BuGn") +
+  geom_bar(aes(fill = Severity), position = "stack", col = "black") +
+  ylab("Weather Condition") +
+  ggtitle("Bay Area Weather Conditions during accident")
+```
+
+```{r}
+ggsave("accidents_stackbar_Weather.png", plot = last_plot())
+```
+
+# Data set Link
+
+<https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents?resource=download>
+
+# Citations as requested by the dataset
+
+-   Moosavi, Sobhan, Mohammad Hossein Samavatian, Srinivasan Parthasarathy, and Rajiv Ramnath. “[A Countrywide Traffic Accident Dataset](https://arxiv.org/abs/1906.05409).”, 2019.
+
+-   Moosavi, Sobhan, Mohammad Hossein Samavatian, Srinivasan Parthasarathy, Radu Teodorescu, and Rajiv Ramnath. ["Accident Risk Prediction based on Heterogeneous Sparse Data: New Dataset and Insights."](https://arxiv.org/abs/1909.09638) In proceedings of the 27th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems, ACM, 2019.
