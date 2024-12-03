@@ -91,6 +91,10 @@ head(accidents[,8:20])
 sum(is.na(apply(accidents[,8:20], MARGIN = 2, FUN = as.logical)))
 ```
 ```{r}
+accidents[,8:20] <- apply(accidents[,8:20], MARGIN = 2, FUN = as.logical)
+```
+
+```{r}
 bay_area <- c("Alameda", "Contra Costa", "Sonoma", "Napa", "Solano",
               "Marin", "San Francisco", "San Mateo", "Santa Clara")
 accidents_bay_area <- accidents %>% 
