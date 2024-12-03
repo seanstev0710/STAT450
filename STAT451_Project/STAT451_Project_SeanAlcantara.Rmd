@@ -2,10 +2,12 @@
 title: "Bay Area Accidents"
 date: "12/2/2024"
 author: "Sean Steven Alcantara"
-embed-resource: true
+format:
+  html:
+    embed-resources: true
 output: 
   flexdashboard::flex_dashboard:
-    orientation: rows
+    orientation: columns
     vertical_layout: fill
 ---
 
