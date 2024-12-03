@@ -8,7 +8,6 @@ format:
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
-    vertical_layout: fill
 ---
 
 ```{r}
@@ -21,7 +20,7 @@ library(maps)
 
 ## (a)
 
-**(a) Question:** **What is the source of your data?**
+**(a) Question: What is the source of your data?**
 
 <https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents?resource=download>
 
@@ -137,9 +136,10 @@ bay_area_map <- map_data("county", "california") %>%
 library(flexdashboard)
 ```
 
-## Row
+Row
+-----------------------------------------------------------------------
 
-### Chart A
+### Bay Area Accidents Per Year
 
 ```{r}
 ggplot(accidents_bay_area, aes(x = month)) +
@@ -149,9 +149,11 @@ ggplot(accidents_bay_area, aes(x = month)) +
   ggtitle("Bay Area Accidents")
 ```
 
-## Row
+Row
+-----------------------------------------------------------------------
 
-### Chart B
+
+### Bay Area Hourly Accidents July to Oct (2020 vs 2021)
 
 ```{r}
 ggplot(accidents_bay_area_2020and2021_Jul_Oct, aes(x = hour)) +
@@ -162,9 +164,10 @@ ggplot(accidents_bay_area_2020and2021_Jul_Oct, aes(x = hour)) +
   ggtitle("Bay Area hourly accidents July to Oct (2020 vs 2021)")
 ```
 
-## Row
+Row
+-----------------------------------------------------------------------
 
-### Chart C
+### Bay Area Accidents near Points of Interest
 
 ```{r}
 POI_accidents %>%
@@ -176,9 +179,10 @@ POI_accidents %>%
   ggtitle("Bay Area Accidents near a Point of Interest (POI)")
 ```
 
-## Row
+Row
+-----------------------------------------------------------------------
 
-### Chart D
+### Map of Bay Area Accidents (July-Oct 2020)
 
 ```{r}
 ggplot() +
@@ -189,7 +193,7 @@ ggplot() +
   coord_map() +
   ylab("Latitude") +
   xlab("Longitude") +
-  ggtitle("Bay Area accidents from (July-Oct 2021)")
+  ggtitle("Bay Area accidents from (July-Oct 2020)")
 ```
 
 # Part 4
