@@ -1,0 +1,193 @@
+---
+title: "Bay Area Accidents"
+date: "12/2/2024"
+author: "Sean Steven Alcantara"
+embed-resource: true
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+```{r}
+library(tidyverse)
+library(mapproj)
+library(maps)
+```
+
+# Part 1
+
+## (a)
+
+**(a) Question:** **What is the source of your data?**
+
+<https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents?resource=download>
+
+## (b)
+
+**(b) Question: For each variable, state what type.**
+
+I had to change the types of some variables to use it. I also did not use all the variables. All variables listed below are used and are what the new variable types are
+
+-   categorical
+
+    -   Severity, Weather_Condition, POI, State, County
+
+-   time
+
+    -   Start_Time, End_Time
+
+-   quantitative
+
+    -   Distance.mi. , Accident_Duration
+
+-   geolocation
+
+    -   Start_Lat , Start_Lng
+
+# Part 2
+
+## (a)
+
+**(a) Question: Make list of the visualization you have created for your dashboard. State whether you have reproduced or modified some existing visualization, provide the links to the original visualization.**
+
+I am making my own visualizations.
+
+-   Bar graph
+
+-   Scatter plot
+
+-   Heatmap
+
+-   Map
+
+# Part 3 (Load and process data)
+
+```{r}
+road_accidents <- read.csv("../Project/US_Accidents_March23.csv")
+dim(road_accidents)
+```
+
+```{r}
+accidents <- road_accidents %>% 
+  select(Severity, Start_Time, State, County, Start_Lat, Start_Lng,
+         Weather_Condition, Amenity:Turning_Loop) %>% 
+  mutate(Start_Time = ymd_hms(Start_Time)) %>% 
+  mutate(Severity = as.character(Severity),
+         year = year(Start_Time),
+         date = date(Start_Time),
+         month = month(Start_Time, label = TRUE),
+         wday = wday(Start_Time, label = TRUE),
+         hour = hour(Start_Time)) %>% 
+  filter(! year %in% c(2016, 2023))
+```
+
+
+```{r}
+head(accidents[,8:20])
+```
+
+```{r}
+sum(is.na(apply(accidents[,8:20], MARGIN = 2, FUN = as.logical)))
+```
+```{r}
+bay_area <- c("Alameda", "Contra Costa", "Sonoma", "Napa", "Solano",
+              "Marin", "San Francisco", "San Mateo", "Santa Clara")
+accidents_bay_area <- accidents %>% 
+  filter(State == "CA", County %in% bay_area)
+```
+
+```{r}
+accidents_bay_area_2020_Jul_Oct<- accidents_bay_area %>% 
+  filter(year %in% c(2020),
+         month %in% c("Jul", "Aug", "Sep", "Oct"))
+```
+
+```{r}
+accidents_bay_area_2020and2021_Jul_Oct<- accidents_bay_area %>% 
+  filter(year %in% c(2020, 2021),
+         month %in% c("Jul", "Aug", "Sep", "Oct"))
+```
+
+```{r}
+accident_count <- nrow(accidents_bay_area)
+POI_accidents <- accidents_bay_area %>%
+  select(Amenity:Turning_Loop, Severity) %>% 
+  pivot_longer(Amenity:Turning_Loop, names_to = "POI") %>% 
+  select(POI, value, Severity) %>% 
+  mutate(POI = as.factor(POI))
+```
+
+```{r}
+bay_area_lowercase <- tolower(bay_area)
+bay_area_map <- map_data("county", "california") %>% 
+  filter(subregion %in% bay_area_lowercase)
+```
+
+
+# Charts
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+## Row
+
+### Chart A
+
+```{r}
+ggplot(accidents_bay_area, aes(x = month)) +
+  geom_bar(col = "black") +
+  facet_wrap(vars(year), ncol = 2) +
+  guides(x = guide_axis(angle = 90)) +
+  ggtitle("Bay Area Accidents")
+```
+
+## Row
+
+### Chart B
+
+```{r}
+ggplot(accidents_bay_area_2020and2021_Jul_Oct, aes(x = hour)) +
+  scale_fill_brewer(palette = "Blues") +
+  geom_histogram(aes(group = Severity, fill = Severity),
+                 col = "black", bins = 24) +
+  facet_wrap(vars(year), ncol = 2) +
+  ggtitle("Bay Area hourly accidents July to Oct (2020 vs 2021)")
+```
+
+## Row
+
+### Chart C
+
+```{r}
+POI_accidents %>%
+  filter(value == TRUE) %>% 
+  ggplot(aes(y = fct_rev(fct_infreq(POI)))) +
+  scale_fill_brewer(palette = "BuGn") +
+  geom_bar(aes(fill = Severity), position = "stack", col = "black") +
+  ylab("POI") +
+  ggtitle("Bay Area Accidents near a Point of Interest (POI)")
+```
+
+## Row
+
+### Chart D
+
+```{r}
+ggplot() +
+  geom_polygon(data = bay_area_map, aes(x=long, y = lat, group = group),
+               fill = "white", color = "black") +
+  geom_point(data = accidents_bay_area_2020_Jul_Oct,
+             aes(x=Start_Lng, y = Start_Lat), alpha = 0.1) +
+  coord_map() +
+  ylab("Latitude") +
+  xlab("Longitude") +
+  ggtitle("Bay Area accidents from (July-Oct 2021)")
+```
+
+# Part 4
+
+## (a)
+
+**(a) Question: Write a narrative explaining the story of your data, visualizations and your dashboard.**

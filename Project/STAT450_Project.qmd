@@ -51,17 +51,9 @@ Shows latitude in GPS coordinate of the start point.
 
 Shows longitude in GPS coordinate of the start point.
 
-**Crossing**
+**POI**
 
-A POI annotation which indicates presence of crossing in a nearby location.
-
-**Junction**
-
-A POI annotation which indicates presence of junction in a nearby location.
-
-**Traffic_Signal**
-
-A POI annotation which indicates presence of traffic_signal in a nearby location.
+If there is a point of interest near the accident such as crossings, junctions, traffic lights, etc.
 
 # Cleanup
 
@@ -120,7 +112,7 @@ accidents_bay_area <- accidents %>%
 ```{r}
 ggplot(accidents_bay_area, aes(x = month)) +
   geom_bar(col = "black") +
-  facet_wrap(~year, ncol = 2) +
+  facet_wrap(vars(year), ncol = 2) +
   guides(x = guide_axis(angle = 90)) +
   ggtitle("Bay Area Accidents")
 ```
@@ -162,14 +154,21 @@ ggtitle("Bay Area monthly accidents (2020)")
 ggsave("accident_barplot_per_month_2020_bayarea_fill.png", plot = last_plot())
 ```
 
-## 3.) Histogram of accidents per hour bay area
+## 3.) Histogram of accidents per hour bay area July to October (2020 vs 2021)
 
 ```{r}
-ggplot(accidents_bay_area, aes(x = hour)) +
+accidents_bay_area_2020and2021_Jul_Oct<- accidents_bay_area %>% 
+  filter(year %in% c(2020, 2021),
+         month %in% c("Jul", "Aug", "Sep", "Oct"))
+```
+
+```{r}
+ggplot(accidents_bay_area_2020and2021_Jul_Oct, aes(x = hour)) +
   scale_fill_brewer(palette = "Blues") +
   geom_histogram(aes(group = Severity, fill = Severity),
                  col = "black", bins = 24) +
-  ggtitle("Bay Area hourly accidents (2020)")
+  facet_wrap(vars(year), ncol = 2) +
+  ggtitle("Bay Area hourly accidents (2020 vs 2021)")
 ```
 
 ```{r}
@@ -216,7 +215,30 @@ ggplot() +
 ggsave("accident_map_2020_Jul_Oct.png", plot = last_plot())
 ```
 
-## Severity \>= 3 primarily happens on freeways in the SF Bay Area
+### Map of accidents in bay area, 2021 July to October
+
+```{r}
+accidents_bay_area_2021_Jul_Oct <- accidents_bay_area %>%
+  filter(year == 2021, month %in% c("Jul", "Aug", "Sep", "Oct"))
+```
+
+```{r}
+ggplot() +
+  geom_polygon(data = bay_area_map, aes(x=long, y = lat, group = group),
+               fill = "white", color = "black") +
+  geom_point(data = accidents_bay_area_2021_Jul_Oct,
+             aes(x=Start_Lng, y = Start_Lat), alpha = 0.1) +
+  coord_map() +
+  ylab("Latitude") +
+  xlab("Longitude") +
+  ggtitle("Bay Area accidents from (July-Oct 2021)")
+```
+
+```{r}
+ggsave("accident_map_2021_Jul_Oct.png", plot = last_plot())
+```
+
+### Severity \>= 3 primarily happens on freeways in the SF Bay Area
 
 ```{r}
 accidents_bay_area_severity_3plus <- accidents_bay_area %>%
@@ -239,7 +261,7 @@ ggplot() +
 ggsave("accident_map_bayarea_severity3plus.png", plot = last_plot())
 ```
 
-## leaflet since to show the roads that is not on the ggplot above
+### leaflet since to show the roads that is not on the ggplot above
 
 ```{r}
 library(leaflet)
@@ -256,7 +278,7 @@ leaflet(data = accidents_bay_area_severity_3plus) %>%
   )
 ```
 
-# 6.) nearby POIs where accidents happen
+## 5.) nearby POIs where accidents happen
 
 ```{r}
 accident_count <- nrow(accidents_bay_area)
@@ -304,7 +326,9 @@ POI_accidents %>%
 ggsave("accidents_fillbar_POI.png", plot = last_plot())
 ```
 
-# 7.) Weather conditions when accidents happen
+## 6.) Weather conditions when accidents happen
+
+Not a good viz, since this is pretty much expected as the weather in bay area is almost always either sunny or cloudy. It maybe rains a few days a year so its expected that there's not a lot of accidents that happened while it was raining in the span of a year.
 
 ```{r}
 Weather_accidents <- accidents_bay_area %>% 
