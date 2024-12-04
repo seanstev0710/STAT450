@@ -7,66 +7,17 @@ format:
     embed-resources: true
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
 ---
 
 ```{r}
 library(tidyverse)
 library(mapproj)
 library(maps)
+library(leaflet)
 ```
-
-# Part 1
-
-## (a)
-
-**(a) Question: What is the source of your data?**
-
-<https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents?resource=download>
-
-## (b)
-
-**(b) Question: For each variable, state what type.**
-
-I had to change the types of some variables to use it. I also did not use all the variables. All variables listed below are used and are what the new variable types are
-
--   categorical
-
-    -   Severity, Weather_Condition, POI, State, County
-
--   time
-
-    -   Start_Time, End_Time
-
--   quantitative
-
-    -   Distance.mi. , Accident_Duration
-
--   geolocation
-
-    -   Start_Lat , Start_Lng
-
-# Part 2
-
-## (a)
-
-**(a) Question: Make list of the visualization you have created for your dashboard. State whether you have reproduced or modified some existing visualization, provide the links to the original visualization.**
-
-I am making my own visualizations.
-
--   Bar graph
-
--   Scatter plot
-
--   Heatmap
-
--   Map
-
-# Part 3 (Load and process data)
 
 ```{r}
 road_accidents <- read.csv("../Project/US_Accidents_March23.csv")
-dim(road_accidents)
 ```
 
 ```{r}
@@ -83,14 +34,6 @@ accidents <- road_accidents %>%
   filter(! year %in% c(2016, 2023))
 ```
 
-
-```{r}
-head(accidents[,8:20])
-```
-
-```{r}
-sum(is.na(apply(accidents[,8:20], MARGIN = 2, FUN = as.logical)))
-```
 ```{r}
 accidents[,8:20] <- apply(accidents[,8:20], MARGIN = 2, FUN = as.logical)
 ```
@@ -129,15 +72,62 @@ bay_area_map <- map_data("county", "california") %>%
   filter(subregion %in% bay_area_lowercase)
 ```
 
-
-# Charts
-
 ```{r setup, include=FALSE}
 library(flexdashboard)
 ```
 
+# Part 1
+
 Row
------------------------------------------------------------------------
+--------------------------------------------------------------------
+**(a) Question: What is the source of your data?**
+ Source:
+ <https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents?resource=download>
+ Description:
+ This is a countrywide car accident dataset that covers 49 states of the USA. The accident data were collected from February 2016 to March 2023,
+ using multiple APIs that provide streaming traffic incident (or event) data. These APIs broadcast traffic data captured by various entities,
+ including the US and state departments of transportation, law enforcement agencies, traffic cameras, and traffic sensors within the road networks.
+ The dataset currently contains approximately 7.7 million accident records.
+
+
+Row
+--------------------------------------------------------------------
+**(b) Question: For each variable, state what type.**
+ 
+-   categorical
+
+    -   Severity: hows the severity of the accident, a number between 1 and 4, where 1 indicates the least impact on traffic (i.e., short delay as a result of the accident) and 4 indicates a significant impact on traffic (i.e., long delay).
+    -   Weather_Condition: Shows the weather condition (rain, snow, thunderstorm, fog, etc.)
+    -   POI: Points of interest near an accident. i.e. Junction, Traffic_Light, Crossing, etc.
+    -   State: State where the accident happened
+    -   County: County where the accident happened
+
+-   time
+
+    -   Start_Time: Time when the accident happened
+
+-   quantitative
+
+    -   Distance.mi.: The length of the road extent affected by the accident in miles.
+
+-   geolocation
+
+    -   Start_Lat: Shows latitude in GPS coordinate of the start point.
+    -   Start_Lng: Shows longitude in GPS coordinate of the start point.
+
+# Part 2
+
+## (a)
+
+**(a) Question: Make list of the visualization you have created for your dashboard. State whether you have reproduced or modified some existing visualization, provide the links to the original visualization.**
+
+I am making my own visualizations.
+
+-   3 Barplot
+
+-   1 Map
+
+# Plots {.storyboard}
 
 ### Bay Area Accidents Per Year
 
@@ -149,9 +139,9 @@ ggplot(accidents_bay_area, aes(x = month)) +
   ggtitle("Bay Area Accidents")
 ```
 
-Row
------------------------------------------------------------------------
-
+***
+We can see that there's an increase in the count of accidents after 2020, compared to before 2021. We also see
+a large dip in accidents around July to October of 2020. This is likely an effect of the Covid lockdowns that started on April 2020
 
 ### Bay Area Hourly Accidents July to Oct (2020 vs 2021)
 
@@ -164,8 +154,7 @@ ggplot(accidents_bay_area_2020and2021_Jul_Oct, aes(x = hour)) +
   ggtitle("Bay Area hourly accidents July to Oct (2020 vs 2021)")
 ```
 
-Row
------------------------------------------------------------------------
+***
 
 ### Bay Area Accidents near Points of Interest
 
@@ -178,22 +167,19 @@ POI_accidents %>%
   ylab("POI") +
   ggtitle("Bay Area Accidents near a Point of Interest (POI)")
 ```
-
-Row
------------------------------------------------------------------------
+# Map of Bay Area Accidents
 
 ### Map of Bay Area Accidents (July-Oct 2020)
 
 ```{r}
-ggplot() +
-  geom_polygon(data = bay_area_map, aes(x=long, y = lat, group = group),
-               fill = "white", color = "black") +
-  geom_point(data = accidents_bay_area_2020_Jul_Oct,
-             aes(x=Start_Lng, y = Start_Lat), alpha = 0.1) +
-  coord_map() +
-  ylab("Latitude") +
-  xlab("Longitude") +
-  ggtitle("Bay Area accidents from (July-Oct 2020)")
+leaflet(data = accidents_bay_area_2020_Jul_Oct) %>% 
+  addTiles() %>% 
+  addCircleMarkers(
+    lng = ~Start_Lng,
+    lat = ~Start_Lat,
+    popup = ~paste(Start_Time, "<br>", "Severity =", Severity),
+    radius = 1
+  )
 ```
 
 # Part 4
