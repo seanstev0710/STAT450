@@ -151,13 +151,13 @@ ggplot(accidents_bay_area_2020and2021_Jul_Oct, aes(x = hour)) +
   geom_histogram(aes(group = Severity, fill = Severity),
                  col = "black", bins = 24) +
   facet_wrap(vars(year), ncol = 2) +
-  ylab("hour of day") +
+  xlab("hour of day") +
   ggtitle("Bay Area hourly accidents July to Oct (2020 vs 2021)")
 ```
 
 ***
 - For both the year 2020 and 2021, the distribution of data is multimodal, with the first maxima at hours 7 to 10 and the second
-maxima at hours 16 to 18 to.
+maxima at hours 16 to 18 and both range of hours are rush hour.
 
 - The main difference between the 2020 and 2021 hourly histogram is the count, with 2020 having lower counts compared to the year 2021.
 
@@ -207,4 +207,6 @@ leaflet(data = accidents_bay_area_2020_Jul_Oct) %>%
 
 **(a) Question: Write a narrative explaining the story of your data, visualizations and your dashboard.**
 
-Accidents increased post-Covid compared to PreCovid in the Bay Area. There was also a large decrease in the frequency of accidents during July to Oct 2020. If the decrease in frequency is due to the lockdown that started on April 2020, then that means only essential workers will go to their work location, and less people would be driving around other than to get essentials. This means that most accidents would be largely clustered on freeways. Looking at the map of the bay area in [Plots Page](#Plots), most accidents does happen in the Freeway and rarely on other roads.
+-   This dashboard focuses primarily on accidents around the Bay Area. However, it is possible to extend the analysis to any of the other States except for Hawaii.
+
+- Accidents increased post-Covid compared to PreCovid in the Bay Area. There was also a large decrease in the frequency of accidents during July to Oct 2020. If the decrease in frequency is due to the lockdown that started on April 2020, then that means only essential workers will go to their work location, and less people would be driving around other than to get essentials. This means that most accidents would be largely clustered on freeways. Looking at the map of the bay area, most accidents did happen in the Freeway and rarely on other roads during July to October 2020.
