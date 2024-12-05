@@ -78,20 +78,19 @@ library(flexdashboard)
 
 # Part 1
 
-Row
---------------------------------------------------------------------
 **(a) Question: What is the source of your data?**
+ 
  Source:
  <https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents?resource=download>
+ 
  Description:
- This is a countrywide car accident dataset that covers 49 states of the USA. The accident data were collected from February 2016 to March 2023,
- using multiple APIs that provide streaming traffic incident (or event) data. These APIs broadcast traffic data captured by various entities,
- including the US and state departments of transportation, law enforcement agencies, traffic cameras, and traffic sensors within the road networks.
- The dataset currently contains approximately 7.7 million accident records.
+ 
+-   This is a countrywide car accident dataset that covers 49 states of the USA. 
 
+-   The accident data were collected from February 2016 to March 2023, using multiple APIs that provide streaming traffic incident (or event) data. These APIs broadcast traffic data captured by various entities, including the US and state departments of transportation, law enforcement agencies, traffic cameras, and traffic sensors within the road networks.
 
-Row
---------------------------------------------------------------------
+-   The dataset currently contains approximately 7.7 million accident records.
+
 **(b) Question: For each variable, state what type.**
  
 -   categorical
@@ -117,13 +116,13 @@ Row
 
 # Part 2
 
-## (a)
-
 **(a) Question: Make list of the visualization you have created for your dashboard. State whether you have reproduced or modified some existing visualization, provide the links to the original visualization.**
 
 I am making my own visualizations.
 
--   3 Barplot
+-   2 Bar plots
+
+-   1 Histogram
 
 -   1 Map
 
@@ -140,8 +139,9 @@ ggplot(accidents_bay_area, aes(x = month)) +
 ```
 
 ***
-We can see that there's an increase in the count of accidents after 2020, compared to before 2021. We also see
-a large dip in accidents around July to October of 2020. This is likely an effect of the Covid lockdowns that started on April 2020
+- There's an increase in the count of accidents after 2020, compared to before 2021.
+
+- There is a large dip in accidents around July to October of 2020. This is likely an effect of the Covid lockdowns that started on April 2020
 
 ### Bay Area Hourly Accidents July to Oct (2020 vs 2021)
 
@@ -151,10 +151,20 @@ ggplot(accidents_bay_area_2020and2021_Jul_Oct, aes(x = hour)) +
   geom_histogram(aes(group = Severity, fill = Severity),
                  col = "black", bins = 24) +
   facet_wrap(vars(year), ncol = 2) +
+  ylab("hour of day") +
   ggtitle("Bay Area hourly accidents July to Oct (2020 vs 2021)")
 ```
 
 ***
+- For both the year 2020 and 2021, the distribution of data is multimodal, with the first maxima at hours 7 to 10 and the second
+maxima at hours 16 to 18 to.
+
+- The main difference between the 2020 and 2021 hourly histogram is the count, with 2020 having lower counts compared to the year 2021.
+
+- The lower accident in 2020 is possibly due to the lockdown, where mostly essential workers are driving to work and there are less people going out for leisure.
+
+- The fact that the count of severity 3 accidents didn't change much between 2020 and 2021 shows that these accidents happened in streets with large volumes of traffic. This means that some of these accidents happened on freeways such as the I-880 which is one of the most use roads in the SF bay area.
+
 
 ### Bay Area Accidents near Points of Interest
 
@@ -167,7 +177,13 @@ POI_accidents %>%
   ylab("POI") +
   ggtitle("Bay Area Accidents near a Point of Interest (POI)")
 ```
-# Map of Bay Area Accidents
+
+*** 
+- *Note that this plot does not mean most accidents happen around junctions. It is possible that accidents did not happen near any of the listed Points of Interest(POI)*
+
+- The POI with the highest frequency of accidents are near Junctions
+
+- It doesn't hurt to be extra careful near Junctions, Crossings, and traffic lights since these are the areas where accidents happen frequently.
 
 ### Map of Bay Area Accidents (July-Oct 2020)
 
@@ -182,8 +198,13 @@ leaflet(data = accidents_bay_area_2020_Jul_Oct) %>%
   )
 ```
 
+***
+- Zooming in on areas where the points are most clustered, these are mostly Freeways.
+
+- This reinforces the idea in the "Bay Area Hourly Accidents July to Oct (2020 vs 2021)" plot where accidents happen the most in freeways.
+
 # Part 4
 
-## (a)
-
 **(a) Question: Write a narrative explaining the story of your data, visualizations and your dashboard.**
+
+Accidents increased post-Covid compared to PreCovid in the Bay Area. There was also a large decrease in the frequency of accidents during July to Oct 2020. If the decrease in frequency is due to the lockdown that started on April 2020, then that means only essential workers will go to their work location, and less people would be driving around other than to get essentials. This means that most accidents would be largely clustered on freeways. Looking at the map of the bay area in [Plots Page](#Plots), most accidents does happen in the Freeway and rarely on other roads.
