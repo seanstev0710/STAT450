@@ -1,7 +1,7 @@
 ---
 title: "STAT451 Final Exam"
 author: "Sean Steven Alcantara"
-date: "12/9/2024"
+date: "12/12/2024"
 format: 
   html:
     embed-resources: true
@@ -22,6 +22,8 @@ options(digits = 2)
 **Question:** Describe the kinds of visualization products Luzmo offers. What visualization products have we used in the class that are similar? List two or more
 
 #### Answer:
+
+Luzmo offers dashboarding which offers standard charts such as the pie chart, barplot, line graphs, etc. The charts shown on their website seems to be dynamic. Similar products shown and used during the class are Flourish, R, Microsoft Excel, and Plotly. Although for R you would need to install libraries such as flexdashboard and ggplot2.
 
 ## (b)
 
@@ -123,20 +125,21 @@ US population: 334.9 Million
 
 United Kingdom population: 68.35 Million
 
-The proportion is better. The UK killer proportion is only 25% of the US Killer proportion as opposed to the original graph where the UK seems like it has such a smaller number of serial killers compared to the US. In fact, the proportion of killers to non-killers is so small that the US and the UK serial killer bars are identical.
+The proportion is better. The US killer proportion is 3x to 4x of the UK Killer proportion as opposed to the original graph where the UK seems like it has such a smaller number of serial killers compared to the US.
 
 ```{r}
 killers <- read.csv("Killers_per_country.csv")
 killers <- killers %>% 
-  mutate(Country = as.factor(Country))
+  mutate(Country = as.factor(Country)) |> 
+  filter(Killer == "Killer")
 head(killers)
 ```
 
 ```{r}
 ggplot(killers, aes(x = fct_rev(fct_reorder(Country, Killer_count)),
-                       y = Killer_count, fill = Killer)) +
-  geom_bar(stat = "identity", position = "fill") +
-  ylab("Serial Killers Proportion") +
+                       y = (Killer_count/Population) * 100000)) +
+  geom_bar(stat = "identity") +
+  ylab("Serial Killers per 100,000") +
   xlab("Country") +
   ggtitle("Serial Killers by Country")
 ```
@@ -167,4 +170,4 @@ Deloitte - <https://apply.deloitte.com/careers/JobDetail/Deloitte-Government-Pub
 
 #### Answer:
 
-I agree with the 10 ideas in the list. The only thing I can think of to slightly changing is for item 2. Rather than focusing on the limiting the number of colors, I think it is more important to take note of what kind of color scheme to use.
+I agree with the 10 ideas in the list. The only thing I can think of to slightly changing is for item 2. Rather than focusing on the limiting the number of colors, I think it is more important to take note of what kind of color scheme to use. In some cases more colors might be needed if there are many categories that need to be differentiated, in this case make sure to use different colors, and avoid using different shades of the same color.
